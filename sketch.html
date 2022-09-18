@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+  <head>
+    <meta charset="utf-8">
+    <link rel="stylesheet" href="css/styles.css">
+    <title></title>
+  </head>
+  <body>
+    <center>
+    <h1>The machine that builds the machine</h1>
+    </center>
+    <div class = 'main'>
+      <div class='home'>
+        <table>
+          <tr>
+          <!-- tr td are table elements/structure -->
+          <button type="button" name="button" id="clear2" onclick="clear2()">Clear</button>
+          <button type="button" id="undo" onclick="undo()">Undo</button>
+          <td>
+            <canvas id="canvas" width="600" height="400"
+            onmousemove="mouseMovement(event)"
+            onmousedown="startDrawing()"
+            onmouseup="stopDrawing()">
+            </canvas>
+          </td>
+          <td>
+            <button class="del" id='del' type="button" name="del" onclick="del()">Del</button>
+            <div class='textarea' id="chat" rows="20" cols="20">
+            </div><br>
+            <input type='text' id="messagebox"> </input>
+            <button type="button" name="button" onclick="enter()">Send</button>
+          </td>
+        </tr>
+        </table>
+      </div>
+      <div class="todo">
+        <h3>Todo: </h3>
+        <ol>
+          <p>Please take care of urself.</p>
+
+        </ol>
+        </div>
+
+        <div class="sidenav">
+          <a href="https://mail.google.com/mail/u/0/?pli=1#inbox">myEmail</a><br>
+          <a href="#">Dev tools</a><br>
+          <a href="#">Home</a><br>
+
+        </div>
+    </div>
+    <script src="machine.js">
+    </script>
+  </body>
+</html>
