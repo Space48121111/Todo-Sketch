@@ -26,7 +26,7 @@ function update() {
   }
   str += '</ul>'
   chat.innerHTML = str;
-  console.log(convo);
+  // console.log(convo);
 
 }
 
@@ -215,7 +215,7 @@ function load() {
     pixels = JSON.parse(storage1);
   }
   update();
-  sketch();
+  // sketch();
 }
 
 load();
