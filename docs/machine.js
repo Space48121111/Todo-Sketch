@@ -9,6 +9,7 @@ var startY;
 var isDrawing = false;
 var strokeCt = 0;
 let d = false;
+let usesTouch = false;
 
 function update() {
   let str = '';
@@ -39,23 +40,6 @@ function enter() {
   update();
 }
 
-document.addEventListener('keydown', (event) => {
-  if (event.key == 'Enter') {
-    enter();
-  }
-}, false);
-
-function load() {
-  let storage = localStorage.getItem('convo');
-  if (storage != null)
-  {
-    convo = JSON.parse(storage);
-  }
-  update();
-}
-
-load();
-
 
 function del() {
   d = !d;
@@ -79,7 +63,75 @@ function del_i(i) {
   update();
 }
 
+document.addEventListener('keydown', (event) => {
+  if (event.key == 'Enter') {
+    enter();
+  }
+}, false);
 
+document.addEventListener('touchstart', e => {
+  [...e.changedTouches].forEach(touch => {
+    //e.preventDefault();
+    const dot = document.createElement('div')
+    dot.classList.add('dot')
+    dot.style.top = `${touch.pageY}px`
+    dot.style.left = `${touch.pageX}px`
+    dot.id = touch.identifier
+    document.body.append(dot)
+    clientX = touch.clientX
+    clientY = touch.clientY
+  });
+}, { passive: false })
+
+document.addEventListener('touchmove', e => {
+  // console.log(e);
+  // console.log('Move');
+  [...e.changedTouches].forEach(touch => {
+    const dot = document.getElementById(touch.identifier)
+    dot.style.top = `${touch.pageY}px`
+    dot.style.left = `${touch.pageX}px`
+    y = touch.pageY - canvas.offsetTop
+    x = touch.pageX - canvas.offsetLeft
+    console.log(`TouchMoves:  x: ${x}px, y: ${y}px`)   
+//     deltaX = parseInt(touch.clientX - clientX);
+//     deltaY = parseInt(touch.clientY - clientY);
+   //console.log('myDeltaMoves '+deltaX+' '+ deltaY)
+    
+    
+    usesTouch = true
+  })
+}, false)
+
+document.addEventListener('touchend', e => {
+
+  // Compute the change in X and Y coordinates.
+  // The first touch point in the changedTouches
+  // list is the touch point that was just removed from the surface.
+
+  // Process the data…
+  [...e.changedTouches].forEach(touch => {
+    const dot = document.getElementById(touch.identifier)
+    dot.remove()
+    
+    y = touch.pageY - canvas.offsetTop
+    x = touch.pageX - canvas.offsetLeft
+    console.log(`TouchEnds:  x: ${x}px, y: ${y}px`)  
+    
+//     deltaX = parseInt(touch.clientX - clientX);
+//     deltaY = parseInt(touch.clientY - clientY);
+    // console.log('myDeltaEnds '+deltaX+' '+ deltaY)
+    usesTouch = false
+  })
+}, false);
+
+document.addEventListener('touchcancel', e => {
+  [...e.changedTouches].forEach(touch => {
+    const dot = document.getElementById(touch.identifier)
+    dot.remove()
+    usesTouch = false
+
+  })
+})
 
 
 function mouseMovement(e) {
@@ -143,7 +195,7 @@ function undo() {
   sketch();
 }
 
-function clear2() {
+function clear1() {
   pixels = [];
   ctx.clearRect(0, 0, canvas.width, canvas.height);
   console.log('clear func triggered')
@@ -151,6 +203,22 @@ function clear2() {
 // calling the clear() func
 // binding the func with the button
 // document.getElementById('clear').addEventListener('click', clear);
+
+
+function load() {
+  let storage = localStorage.getItem('convo');
+  let storage1 = localStorage.getItem('pixels');
+
+  if (storage != null || storage1 != null)
+  {
+    convo = JSON.parse(storage);
+    pixels = JSON.parse(storage1);
+  }
+  update();
+  sketch();
+}
+
+load();
 
 
 function frame() {
