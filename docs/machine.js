@@ -209,13 +209,22 @@ function load() {
   let storage = localStorage.getItem('convo');
   let storage1 = localStorage.getItem('pixels');
 
-  if (storage != null || storage1 != null)
+  if (storage != null)
   {
-    convo = JSON.parse(storage);
-    pixels = JSON.parse(storage1);
+    convo = JSON.parse(storage);   
   }
   update();
-  // sketch();
+  
+  if (storage1 != null)
+  {
+    pixels = JSON.parse(storage1);
+    
+  }
+  else 
+  {
+    sketch();
+  }
+
 }
 
 load();
