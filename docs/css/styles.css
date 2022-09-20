@@ -38,13 +38,27 @@ body {
 
 
 .sidenav {
-  padding: inherit;
-  height: 100%;
-  width: 200px;
-  postion: fixed;
-  background-color: blue
+  background-color: silver;
+  color: white;
+}
+
+.sidenav a:link {
+  padding: 30px;
+  text-decoration: none;
+}
+
+a:link {
+  text-decoration: none;
+}
+
+.sidenav a.active {
+  background-color: violet;
+  color: white;
+}
+
+.sidenav a:hover {
+  background-color: navy;
   color: silver;
-  z-index: 1;
 }
 
 
