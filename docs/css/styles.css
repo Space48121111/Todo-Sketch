@@ -31,7 +31,7 @@ body {
 
 .todo {
   height: 20%;
-  width: 50px;
+  width: 100px;
   background-color: pink;
   font-style: oblique;
 }
