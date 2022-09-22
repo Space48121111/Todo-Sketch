@@ -24,6 +24,9 @@ input {
 
 body {
   background-color: beige;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
 }
 
 .del {
