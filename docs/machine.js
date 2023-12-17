@@ -8,67 +8,112 @@ var startX;
 var startY;
 var isDrawing = false;
 var strokeCt = 0;
-let d = false;
+let to_delete = false;
 let usesTouch = false;
+let editing = false;
 
-function update() {
-  let str = '';
-  let chat = document.getElementById('chat');
-  str += '<ul>'
-  for (let i=0; i<convo.length; i++)
-  {
-    if (d == true) {
-      str += '<li>'+convo[i]+'&nbsp;&nbsp;<button type="button" onclick="del_i('+i+')">--</button></li>'
-    }
-    else {
-      str += '<li>'+convo[i]+'</li>'
-    }
-  }
-  str += '</ul>'
-  chat.innerHTML = str;
-  // console.log(convo);
 
-}
-
-function enter() {
+function add() {
   let val = document.getElementById('messagebox').value;
   document.getElementById('messagebox').value = '';
   convo.push(val);
-  // console.log(convo);
+  console.log(convo);
   localStorage.setItem('convo', JSON.stringify(convo));
 
-  update();
-}
-
-
-function del() {
-  d = !d;
-  let d_text = document.getElementById('del');
-  if (d)
-  {
-    d_text.innerHTML = "Done"
-  }
-  else
-  {
-    d_text.innerHTML = "Del"
-  }
-
-  update();
-
-}
-
-function del_i(i) {
-  convo.splice(i, 1);
-  localStorage.setItem('convo', JSON.stringify(convo));
   update();
 }
 
 document.addEventListener('keydown', (event) => {
   if (event.key == 'Enter') {
-    enter();
+    add();
   }
 }, false);
 
+function edit() {
+  // toggle editing
+  editing = !editing;
+  let editButton = document.getElementById('edit');
+  let i = document.getElementById('memo');
+
+  if (editing) {
+    editButton.textContent = 'Done';
+  } else {
+    editButton.textContent = 'Edit';
+  }
+  
+  update();
+}
+
+function del() {
+  to_delete = !to_delete;
+  let d_text = document.getElementById('del');
+  if (to_delete) {
+    d_text.innerHTML = "Done"
+  } else {
+    d_text.innerHTML = "Del"
+  }
+
+  update();
+}
+
+
+function update() {
+  let str = '';
+  let memo = document.getElementById('memo');
+  str += '<ul>'
+  for (let i=0; i<convo.length; i++)
+  {
+    if (editing == true) {
+      str += '<li>'+convo[i]+'&nbsp;&nbsp;<button type="button" onclick="enableEditing('+i+')">--</button></li>'
+    } else if (to_delete == true) {
+      str += '<li>'+convo[i]+'&nbsp;&nbsp;<button type="button" onclick="enableDeleting('+i+')">--</button></li>'
+    } else {
+      str += '<li>'+convo[i]+'</li>'
+    }
+  }
+  str += '</ul>'
+  memo.innerHTML = str;
+  // console.log(convo);
+}
+
+
+function enableEditing(i) {
+  let convo = JSON.parse(localStorage.getItem('convo'));
+  let conversationDiv = document.getElementById('memo');
+  console.log(convo[i])
+  let listItem = conversationDiv.childNodes[i];
+
+  let inputField = document.createElement('input');
+  inputField.type = 'text';
+  inputField.value = convo[i];
+    
+  inputField.addEventListener('blur', function() {
+    convo[i] = inputField.value;
+    localStorage.setItem('convo', JSON.stringify(convo));
+    listItem.textContent = convo[i];
+  });
+  
+  if (listItem) {
+    listItem.textContent = '';
+    listItem.appendChild(inputField);
+  } else {
+    console.error('List item not found.');
+  }
+
+  update();
+}
+
+
+
+function enableDeleting(i) {
+  convo.splice(i, 1);
+  localStorage.setItem('convo', JSON.stringify(convo));
+  update();
+}
+
+
+
+// touch
 document.addEventListener('touchstart', e => {
   [...e.changedTouches].forEach(touch => {
     //e.preventDefault();
@@ -84,8 +129,7 @@ document.addEventListener('touchstart', e => {
 }, { passive: false })
 
 document.addEventListener('touchmove', e => {
-  // console.log(e);
-  // console.log('Move');
+
   [...e.changedTouches].forEach(touch => {
     const dot = document.getElementById(touch.identifier)
     dot.style.top = `${touch.pageY}px`
@@ -93,22 +137,13 @@ document.addEventListener('touchmove', e => {
     y = touch.pageY - canvas.offsetTop
     x = touch.pageX - canvas.offsetLeft
     console.log(`TouchMoves:  x: ${x}px, y: ${y}px`)   
-//     deltaX = parseInt(touch.clientX - clientX);
-//     deltaY = parseInt(touch.clientY - clientY);
-   //console.log('myDeltaMoves '+deltaX+' '+ deltaY)
-    
-    
+
     usesTouch = true
   })
 }, false)
 
 document.addEventListener('touchend', e => {
 
-  // Compute the change in X and Y coordinates.
-  // The first touch point in the changedTouches
-  // list is the touch point that was just removed from the surface.
-
-  // Process the data…
   [...e.changedTouches].forEach(touch => {
     const dot = document.getElementById(touch.identifier)
     dot.remove()
@@ -116,10 +151,7 @@ document.addEventListener('touchend', e => {
     y = touch.pageY - canvas.offsetTop
     x = touch.pageX - canvas.offsetLeft
     console.log(`TouchEnds:  x: ${x}px, y: ${y}px`)  
-    
-//     deltaX = parseInt(touch.clientX - clientX);
-//     deltaY = parseInt(touch.clientY - clientY);
-    // console.log('myDeltaEnds '+deltaX+' '+ deltaY)
+
     usesTouch = false
   })
 }, false);
@@ -133,7 +165,7 @@ document.addEventListener('touchcancel', e => {
   })
 })
 
-
+// drawing
 function mouseMovement(e) {
   var rect = canvas.getBoundingClientRect();
   x = e.clientX - rect.left;
@@ -171,22 +203,18 @@ function sketch() {
 
 }
 
-// keep track of the mouse pos
 function stopDrawing() {
   isDrawing = false;
 }
 
 function undo() {
   console.log('Tbt');
-  // Nothing has been drawn yet
   if (strokeCt < 1) {
     return;
   }
   for (var i=pixels.length-1; i>=0; i--) {
-    // mousedown increments strokeCt
-    // if == hasn't been incremented, it's the previous one
+
     if (pixels[i].strokeCt == strokeCt) {
-      // undo delete the pixels
       pixels.splice(i, 1);
       console.log('stroke cts '+strokeCt);
     }
@@ -200,9 +228,6 @@ function clear1() {
   ctx.clearRect(0, 0, canvas.width, canvas.height);
   console.log('clear func triggered')
 }
-// calling the clear() func
-// binding the func with the button
-// document.getElementById('clear').addEventListener('click', clear);
 
 
 function load() {

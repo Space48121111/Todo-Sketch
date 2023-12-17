@@ -8,34 +8,27 @@
   </head>
   <body>
 
-    <h1>The machine that builds the machine!</h1>
+    <h1>Tools</h1>
     <center>
     <div class="topnav" id="nav">
-      <a href="index.html" class="active" >Dev Tools</a>
-      <a href="https://mail.google.com/mail/u/0/?pli=1#inbox">My Email</a>    
+      <a href="index.html" class="active" >Cache</a>
+      <a href="https://mail.google.com/mail/u/0/?pli=1#inbox">Email</a>    
     </div>
 
     <div class = 'main'>
         <table>
-          <tr>
-            
-          <td class="todo" style="vertical-align: top">
-          <h3>Todo: </h3>
-          <ol>
-          <p>Please take care of urself.</p>
-          </ol>
-          </td> 
-            
+          <tr>         
           <td>
             <button class="del" id='del' type="button" name="del" onclick="del()">Del</button>
-            <div class='textarea' id="chat" rows="50" cols="50">
+            <button class="edit" id='edit' type="button" name="edit" onclick="edit()">Edit</button>
+            <div class='textarea' id="memo" rows="250" cols="350">
             </div><br>
-            <input type='text' id="messagebox"> </input>
-            <button type="button" name="button" onclick="enter()">Send</button>
+            <input type='text' id="messagebox" class="width-input"> </input>
+            <button type="button" class="send" name="button" onclick="add()">Send</button>
           </td>
 
           <td>            
-            <canvas id="canvas" width="600" height="400"
+            <canvas id="canvas" width="200" height="400"
             onmousemove="mouseMovement(event)"
             onmousedown="startDrawing()"
             onmouseup="stopDrawing()">           
