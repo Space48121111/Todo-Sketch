@@ -13,20 +13,20 @@ let usesTouch = false;
 let editing = false;
 
 
-function add() {
+function insert() {
   let val = document.getElementById('messagebox').value;
   document.getElementById('messagebox').value = '';
   convo.push(val);
   console.log(convo);
   localStorage.setItem('convo', JSON.stringify(convo));
 
-  update();
+  update(convo);
 }
 
 document.addEventListener('keydown', (event) => {
   if (event.key == 'Enter') {
-    add();
-  }
+    insert();
+  } 
 }, false);
 
 function edit() {
@@ -41,28 +41,16 @@ function edit() {
     editButton.textContent = 'Edit';
   }
   
-  update();
-}
-
-function del() {
-  to_delete = !to_delete;
-  let d_text = document.getElementById('del');
-  if (to_delete) {
-    d_text.innerHTML = "Done"
-  } else {
-    d_text.innerHTML = "Del"
-  }
-
-  update();
+  update(convo);
 }
 
 
-function update() {
+
+function update(convo) {
   let str = '';
   let memo = document.getElementById('memo');
   str += '<ul>'
-  for (let i=0; i<convo.length; i++)
-  {
+  for (let i=0; i<convo.length; i++) {
     if (editing == true) {
       str += '<li>'+convo[i]+'&nbsp;&nbsp;<button type="button" onclick="enableEditing('+i+')">--</button></li>'
     } else if (to_delete == true) {
@@ -73,42 +61,56 @@ function update() {
   }
   str += '</ul>'
   memo.innerHTML = str;
-  // console.log(convo);
+  console.log('update', convo);
 }
+
 
 
 function enableEditing(i) {
   let convo = JSON.parse(localStorage.getItem('convo'));
   let conversationDiv = document.getElementById('memo');
+
   console.log(convo[i])
-  let listItem = conversationDiv.childNodes[i];
 
   let inputField = document.createElement('input');
   inputField.type = 'text';
   inputField.value = convo[i];
-    
-  inputField.addEventListener('blur', function() {
-    convo[i] = inputField.value;
-    localStorage.setItem('convo', JSON.stringify(convo));
-    listItem.textContent = convo[i];
-  });
-  
-  if (listItem) {
-    listItem.textContent = '';
-    listItem.appendChild(inputField);
-  } else {
-    console.error('List item not found.');
-  }
 
-  update();
+  conversationDiv.parentNode.appendChild(inputField);
+  
+  let updateButton = document.createElement('button');
+  updateButton.textContent = 'Update';
+  conversationDiv.parentNode.appendChild(updateButton);
+
+  updateButton.addEventListener('click', function() {
+      convo[i] = inputField.value;
+      localStorage.setItem('convo', JSON.stringify(convo));
+      conversationDiv.textContent = convo[i];
+      conversationDiv.parentNode.removeChild(inputField);
+      conversationDiv.parentNode.removeChild(updateButton);
+      console.log(convo)
+
+      window.location.href = 'index.html';
+    });
 }
 
 
+function del() {
+  to_delete = !to_delete;
+  let d_text = document.getElementById('del');
+  if (to_delete) {
+    d_text.innerHTML = "Done"
+  } else {
+    d_text.innerHTML = "Del"
+  }
+
+  update(convo);
+}
 
 function enableDeleting(i) {
   convo.splice(i, 1);
   localStorage.setItem('convo', JSON.stringify(convo));
-  update();
+  update(convo);
 }
 
 
@@ -237,8 +239,9 @@ function load() {
   if (storage != null)
   {
     convo = JSON.parse(storage);   
+    update(convo);
   }
-  update();
+
   
   if (storage1 != null)
   {
